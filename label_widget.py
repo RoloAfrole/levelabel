@@ -65,6 +65,9 @@ class LabelWidget(QWidget):
         self.limage_label.setFixedWidth(w)
         self.limage_label.setFixedHeight(h)
 
+    def keyPressEvent(self, event):
+        super(QWidget, self).keyPressEvent(event)
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

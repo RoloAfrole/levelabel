@@ -26,6 +26,7 @@ class ControlWidget(QWidget):
         self.set_check()
         self.set_check_func()
         self.set_size()
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def set_size(self):
         self.l_layout.setAlignment(QtCore.Qt.AlignTop)
@@ -38,6 +39,7 @@ class ControlWidget(QWidget):
         self.filelist_w.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.f_widget.setFixedHeight(40)
+        self.f_2widget.setFixedHeight(40)
         self.file_name.setFixedHeight(40)
 
         self.l_widget.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -52,14 +54,16 @@ class ControlWidget(QWidget):
         """
         self.file_name = QLabel()
         self.f_widget = self.setup_func_widget()
-        self.label_w = LabelWidget()
-        self.image_w = ImageWidget(self.label_w)
-        self.filelist_w = FilelistWidget()
+        self.f_2widget = self.setup_second_func_widget()
+        self.label_w = LabelWidget(self)
+        self.image_w = ImageWidget(self.label_w, self)
+        self.filelist_w = FilelistWidget(self)
 
         self.l_layout = QVBoxLayout()
         self.l_layout.addWidget(self.file_name)
         self.l_layout.addWidget(self.image_w)
         self.l_layout.addWidget(self.f_widget)
+        self.l_layout.addWidget(self.f_2widget)
         self.l_widget = QWidget()
         self.l_widget.setLayout(self.l_layout)
 
@@ -97,6 +101,19 @@ class ControlWidget(QWidget):
         f_widget.setLayout(f_layout)
         return f_widget
 
+    def setup_second_func_widget(self):
+        f_widget = QWidget()
+        f_layout = QHBoxLayout()
+        self.left_button = QPushButton("←")
+        self.left_button.clicked.connect(lambda: self.open_data(self.filelist_w.select_filepath_back()))
+        self.right_button = QPushButton("→")
+        self.right_button.clicked.connect(lambda: self.open_data(self.filelist_w.select_filepath()))
+
+        f_layout.addWidget(self.left_button)
+        f_layout.addWidget(self.right_button)
+        f_widget.setLayout(f_layout)
+        return f_widget
+
     def set_check(self):
         self.auto_load_next_data_box.setChecked(self.auto_load_next_data)
         self.auto_save_box.setChecked(self.auto_save)
@@ -122,7 +139,10 @@ class ControlWidget(QWidget):
 
     def labeling(self):
         lbutton = self.sender()
-        self.image_w.update_labeling_data(int(lbutton.text())-1)
+        return self.__f_labeling(int(lbutton.text())-1)
+
+    def __f_labeling(self, level):
+        self.image_w.update_labeling_data(level)
         if self.auto_load_next_data:
             if self.image_w.is_last_idx():
                 self.save_data()
@@ -159,6 +179,31 @@ class ControlWidget(QWidget):
     def closeEvent(self, event):
         self.save_data()
 
+    def keyPressEvent(self, event):
+        if event.modifiers() == QtCore.Qt.ControlModifier:
+            if event.key() == QtCore.Qt.Key_Up:
+                self.image_w.move_selected_idx(v=-1, h=0)
+            if event.key() == QtCore.Qt.Key_Down:
+                self.image_w.move_selected_idx(v=1, h=0)
+            if event.key() == QtCore.Qt.Key_Left:
+                self.image_w.move_selected_idx(v=0, h=-1)
+            if event.key() == QtCore.Qt.Key_Right:
+                self.image_w.move_selected_idx(v=0, h=1)
+        else:
+            if event.key() == QtCore.Qt.Key_Up:
+                self.open_data(self.filelist_w.select_filepath_back())
+            if event.key() == QtCore.Qt.Key_Down:
+                self.open_data(self.filelist_w.select_filepath())
+            if event.key() == QtCore.Qt.Key_Left:
+                self.open_data(self.filelist_w.select_filepath_back())
+            if event.key() == QtCore.Qt.Key_Right:
+                self.open_data(self.filelist_w.select_filepath())
+            if event.key() == QtCore.Qt.Key_1:
+                self.__f_labeling(0)
+            if event.key() == QtCore.Qt.Key_2:
+                self.__f_labeling(1)
+            if event.key() == QtCore.Qt.Key_3:
+                self.__f_labeling(2)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

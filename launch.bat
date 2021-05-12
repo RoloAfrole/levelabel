@@ -8,5 +8,5 @@ set installedPath=%USERPROFILE%
 @REM set installedPath=C:\tools
 cd /d %~dp0
 call %installedPath%%activatePath%
-call activate levelabel
+call activate labeling
 python main.py

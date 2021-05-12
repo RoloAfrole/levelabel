@@ -82,7 +82,7 @@ class ImageWidget(QLabel):
 
     def load_labeling_data(self):
         basename = os.path.splitext(self.image_base_path)[0]
-        self.json_path = os.path.join(os.path.dirname(self.image_path), '{}.lebeljson'.format(basename))
+        self.json_path = os.path.join(os.path.dirname(self.image_path), '{}.leveljson'.format(basename))
         if os.path.exists(self.json_path):
             with open(self.json_path, 'r') as f:
                 self.labeling_data = json.load(f)
@@ -179,9 +179,10 @@ class ImageWidget(QLabel):
 
     def mousePressEvent(self, event):
         clicked_pos = event.pos()
-        self.selected_clicked_area(clicked_pos)
-        img, level = self.get_selected_area_image()
-        self.label_widget.update_limage(img, level)
+        if self.image_path:
+            self.selected_clicked_area(clicked_pos)
+            img, level = self.get_selected_area_image()
+            self.label_widget.update_limage(img, level)
 
     def delete_labeling_data(self, auto=False):
         if not auto:
@@ -194,6 +195,20 @@ class ImageWidget(QLabel):
         h, w, c = self.law_image_data.shape
         self.setFixedWidth(w)
         self.setFixedHeight(h)
+
+    def move_selected_idx(self, v=0, h=0):
+        y = int(self.selected_idx / self.vs)
+        x = self.selected_idx - (y*self.vs)
+        new_y = (y + v) % self.vs
+        new_x = (x + h) % self.hs
+        self.selected_idx = new_x + (new_y * self.vs)
+        self.update_image_data()
+        self.update_image()
+        img, level = self.get_selected_area_image()
+        self.label_widget.update_limage(img, level)
+
+    def keyPressEvent(self, event):
+        super(QLabel, self).keyPressEvent(event)
 
 
 def rectangle_points(hs, vs, image_data):

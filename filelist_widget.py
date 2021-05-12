@@ -100,6 +100,17 @@ class FilelistWidget(QWidget):
             self.selected_idx = idx
             return self.get_selected_path()
 
+    def select_filepath_back(self, idx=None):
+        if idx is None:
+            if self.selected_idx != 0:
+                self.selected_idx -= 1
+                return self.get_selected_path()
+            else:
+                return self.get_selected_path()
+        else:
+            self.selected_idx = idx
+            return self.get_selected_path()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
