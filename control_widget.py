@@ -46,8 +46,8 @@ class ControlWidget(QWidget):
         self.r_widget.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
     def set_init_settings(self):
-        self.auto_load_next_data = True
-        self.auto_save = False
+        self.auto_load_next_data = False
+        self.auto_save = True
 
     def setup_ui(self):
         """Initialize widgets.
@@ -148,7 +148,7 @@ class ControlWidget(QWidget):
                 self.save_data()
                 self.open_data(self.filelist_w.select_filepath())
                 return
-        self.image_w.update_selected_idx()
+        # self.image_w.update_selected_idx()
         img, level = self.image_w.get_selected_area_image()
         self.label_w.update_limage(img, level)
 
