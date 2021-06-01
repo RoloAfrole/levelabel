@@ -165,6 +165,7 @@ class ControlWidget(QWidget):
 
     def open_data(self, file_path):
         if file_path:
+            self.save_data()
             self.file_name.setText(file_path)
             self.image_w.load_image(file_path, self.filelist_w.selected_idx)
             img, level = self.image_w.get_selected_area_image()
